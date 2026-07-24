@@ -1,4 +1,52 @@
 {
+  // ---------------------------------------------------------------------------
+  // Formatting & linting
+  // Prettier is the single source of truth for formatting (prettier.config.js).
+  // ESLint runs `prettier/prettier` as a rule, so the editor and `ng lint` agree.
+  // ---------------------------------------------------------------------------
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "typescript", "html"],
+
+  // ---------------------------------------------------------------------------
+  // TypeScript — use the workspace TypeScript (6.0.x), not VS Code's bundled one
+  // ---------------------------------------------------------------------------
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.preferences.importModuleSpecifier": "relative",
+
+  // ---------------------------------------------------------------------------
+  // Workspace
+  // ---------------------------------------------------------------------------
+  "files.exclude": {
+    "**/.angular": true,
+    "**/.husky": false
+  },
+  "search.exclude": {
+    "**/.angular": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "package-lock.json": true
+  },
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // ---------------------------------------------------------------------------
+  // Peacock window colouring
+  // ---------------------------------------------------------------------------
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#cf6a62",
     "activityBar.background": "#cf6a62",
