@@ -1,5 +1,5 @@
-import { RouterOutlet } from '@angular/router';
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'ps-root',
@@ -7,6 +7,4 @@ import { Component } from '@angular/core';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
-  public title = 'test';
-}
+export class App {}
