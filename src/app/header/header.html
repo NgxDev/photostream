@@ -1,0 +1,38 @@
+<header class="header">
+  <div class="header__brand">
+    <span class="header__logo"><mat-icon inline>image</mat-icon></span>
+    <span class="header__wordmark">photostream</span>
+  </div>
+
+  <div class="header__tabs">
+    <nav mat-tab-nav-bar aria-label="Main" [tabPanel]="tabPanel()">
+      <a
+        #photos="routerLinkActive"
+        mat-tab-link
+        routerLink="/"
+        routerLinkActive
+        [active]="photos.isActive"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <span class="header__tab">
+          <mat-icon inline>grid_view</mat-icon>
+          <span class="header__tab-label">Photos</span>
+        </span>
+      </a>
+      <a
+        #favorites="routerLinkActive"
+        mat-tab-link
+        routerLink="/favorites"
+        routerLinkActive
+        [active]="favorites.isActive"
+      >
+        <span class="header__tab">
+          <mat-icon inline>favorite</mat-icon>
+          <span class="header__tab-label">Favorites</span>
+        </span>
+      </a>
+    </nav>
+  </div>
+
+  <ps-theme-switcher class="header__theme" />
+</header>

@@ -1,0 +1,14 @@
+:host {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--ps-radius-pill);
+  background: var(--ps-chrome);
+}
+
+.theme-switcher {
+  &__glyph {
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+  }
+}

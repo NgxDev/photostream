@@ -1,0 +1,16 @@
+<mat-button-toggle-group
+  hideSingleSelectionIndicator
+  aria-label="Theme"
+  [value]="store.mode()"
+  (change)="select($event)"
+>
+  <mat-button-toggle value="system" aria-label="Match system theme">
+    <span class="theme-switcher__glyph"><mat-icon inline>brightness_auto</mat-icon></span>
+  </mat-button-toggle>
+  <mat-button-toggle value="light" aria-label="Light theme">
+    <span class="theme-switcher__glyph"><mat-icon inline>light_mode</mat-icon></span>
+  </mat-button-toggle>
+  <mat-button-toggle value="dark" aria-label="Dark theme">
+    <span class="theme-switcher__glyph"><mat-icon inline>dark_mode</mat-icon></span>
+  </mat-button-toggle>
+</mat-button-toggle-group>
