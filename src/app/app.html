@@ -1,1 +1,5 @@
-<router-outlet />
+<ps-header [tabPanel]="tabPanel" />
+
+<mat-tab-nav-panel #tabPanel>
+  <router-outlet />
+</mat-tab-nav-panel>

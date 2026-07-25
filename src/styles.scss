@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+@use './styles/tokens';
+@use './styles/theme';
+
+html {
+  height: 100%;
+
+  // System-following by default. ThemeStore overwrites this on the root element when the user
+  // picks an explicit mode; both our light-dark() tokens and Material's read it from here.
+  color-scheme: light dark;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--ps-page);
+  color: var(--ps-ink);
+  font: 400 15px / 1.55 var(--ps-font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizelegibility;
+}

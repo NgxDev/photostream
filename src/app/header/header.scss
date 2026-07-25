@@ -1,0 +1,96 @@
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'brand theme'
+    'tabs tabs';
+  align-items: center;
+  gap: 10px;
+  padding: 10px var(--ps-page-padding) 12px;
+  background: var(--ps-surface);
+  border-bottom: 1px solid var(--ps-border);
+
+  &__brand {
+    grid-area: brand;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__logo {
+    display: inline-flex;
+    font-size: 24px;
+    color: var(--ps-accent);
+  }
+
+  &__wordmark {
+    font: italic 400 18px var(--ps-font-serif);
+    color: var(--ps-ink);
+  }
+
+  &__tabs {
+    grid-area: tabs;
+    padding: 3px;
+    border-radius: var(--ps-radius-pill);
+    background: var(--ps-chrome);
+  }
+
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+  }
+
+  &__tab-label {
+    font-size: 13px;
+  }
+
+  &__theme {
+    grid-area: theme;
+    justify-self: end;
+  }
+}
+
+@media (min-width: 600px) {
+  .header {
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: 'brand tabs theme';
+    gap: 0;
+    height: var(--ps-header-height);
+    padding: 0 var(--ps-page-padding);
+
+    &__brand {
+      gap: 10px;
+    }
+
+    &__logo {
+      font-size: 28px;
+    }
+
+    &__tabs {
+      padding: 4px;
+    }
+
+    &__tab {
+      gap: 8px;
+      font-size: 15px;
+    }
+
+    &__tab-label {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  .header__wordmark {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .header__wordmark {
+    font-size: 21px;
+  }
+}
