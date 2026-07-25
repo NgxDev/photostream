@@ -1,0 +1,52 @@
+// Design tokens
+
+:root {
+  // Surfaces — light "warm paper" / dark "blue hour"
+  --ps-page: light-dark(#f6f4f0, #131720);
+  --ps-surface: light-dark(#ffffff, #1b2029);
+  --ps-chrome: light-dark(#ece9e3, #242b38);
+  --ps-tile: light-dark(#ece9e3, #232936);
+  --ps-tile-highlight: light-dark(#f7f4ef, #2c3342);
+  --ps-stage: light-dark(#ece9e3, #0d1017);
+
+  // Text and lines
+  --ps-ink: light-dark(#201d19, #edeff4);
+  --ps-muted: light-dark(#77716a, #8b93a5);
+  --ps-border: light-dark(#e5e1da, #2b3240);
+
+  // Accent — theme independent
+  --ps-accent: #e2544a;
+  --ps-accent-hover: #c2453c;
+  --ps-on-accent: #ffffff;
+
+  // Photo tile chrome
+  --ps-badge-surface: light-dark(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92));
+  --ps-scrim: rgba(10, 12, 17, 0.45);
+  --ps-pulse-ring: rgba(226, 84, 74, 0.3);
+
+  // Single-photo stage chrome
+  --ps-overlay-surface: light-dark(rgba(255, 255, 255, 0.88), rgba(19, 23, 32, 0.68));
+  --ps-overlay-border: light-dark(#e5e1da, rgba(237, 239, 244, 0.16));
+  --ps-overlay-ink: light-dark(#201d19, #edeff4);
+  --ps-chip-surface: light-dark(rgba(255, 255, 255, 0.88), rgba(19, 23, 32, 0.6));
+  --ps-chip-ink: light-dark(#201d19, rgba(237, 239, 244, 0.8));
+
+  // Empty state
+  --ps-empty-icon: light-dark(#c9c3ba, #454f61);
+  --ps-empty-ring-inner: light-dark(rgba(32, 29, 25, 0.03), rgba(237, 239, 244, 0.03));
+  --ps-empty-ring-outer: light-dark(rgba(32, 29, 25, 0.018), rgba(237, 239, 244, 0.018));
+
+  // Elevation
+  --ps-shadow-badge: 0 1px 4px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3));
+  --ps-shadow-toggle: 0 1px 3px light-dark(rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.3));
+
+  // Typography
+  --ps-font-sans: 'Instrument Sans', system-ui, sans-serif;
+  --ps-font-serif: 'Instrument Serif', georgia, serif;
+  --ps-font-mono: 'Spline Sans Mono', ui-monospace, monospace;
+
+  // Radii
+  --ps-radius-tile: 10px;
+  --ps-radius-stage: 12px;
+  --ps-radius-pill: 999px;
+}
