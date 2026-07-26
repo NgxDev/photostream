@@ -58,14 +58,29 @@ describe('PhotoStreamStore', () => {
     expect(loadMore).toHaveBeenCalledTimes(1);
   });
 
-  it('stops loading when a batch fails, so the next one can still be asked for', () => {
+  it.each([
+    { cause: 'fails', response: () => throwError(() => new Error('picsum is unreachable')) },
+    { cause: 'comes back empty', response: () => of<Photo[]>([]) },
+  ])('stalls the stream when a batch $cause', ({ response }) => {
     const { loadMore, store } = createStore();
 
-    loadMore.mockReturnValueOnce(throwError(() => new Error('picsum is unreachable')));
+    loadMore.mockReturnValueOnce(response());
 
     store.loadMore();
 
     expect(store.loading()).toBe(false);
+    expect(store.stalled()).toBe(true);
+  });
+
+  it('starts asking again once resumed', () => {
+    const { loadMore, store } = createStore();
+
+    loadMore.mockReturnValueOnce(throwError(() => new Error('picsum is unreachable')));
+    store.loadMore();
+
+    store.resume();
+
+    expect(store.stalled()).toBe(false);
 
     loadMore.mockReturnValueOnce(of([photo('1')]));
     store.loadMore();

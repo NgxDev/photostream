@@ -9,11 +9,13 @@ import { PicsumApi } from '../picsum/picsum-api';
 
 interface PhotoStreamState {
   loading: boolean;
+  stalled: boolean;
   scrollOffset: number;
 }
 
 const initialState: PhotoStreamState = {
   loading: false,
+  stalled: false,
   scrollOffset: 0,
 };
 
@@ -33,22 +35,34 @@ export const PhotoStreamStore = signalStore(
     const loadMore = rxMethod<void>(
       pipe(
         exhaustMap(() => {
-          patchState(store, { loading: true });
+          // Stalled until a batch proves otherwise, so an error, an empty page or a response that
+          // never arrives all leave the stream waiting to be asked again rather than retrying.
+          patchState(store, { loading: true, stalled: true });
 
           return store.api.loadMore().pipe(
             tapResponse({
-              next: (batch) => patchState(store, addEntities(batch, streamPhotos), { loading: false }),
-              error: () => patchState(store, { loading: false }),
+              next: (batch) => {
+                const countBefore = store.entities().length;
+
+                patchState(store, addEntities(batch, streamPhotos));
+                patchState(store, { stalled: store.entities().length === countBefore });
+              },
+              error: () => patchState(store, { stalled: true }),
+              finalize: () => patchState(store, { loading: false }),
             })
           );
         })
       )
     );
 
+    const resume = (): void => {
+      patchState(store, { stalled: false });
+    };
+
     const rememberScrollOffset = (offset: number): void => {
       patchState(store, { scrollOffset: offset });
     };
 
-    return { loadMore, rememberScrollOffset };
+    return { loadMore, rememberScrollOffset, resume };
   })
 );

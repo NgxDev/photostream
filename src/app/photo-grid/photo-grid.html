@@ -5,9 +5,12 @@
     [maxBufferPx]="rowHeight() * 4"
     [minBufferPx]="rowHeight() * 2"
   >
-    <div *cdkVirtualFor="let row of rows(); trackBy: trackRow" class="photo-grid__row">
+    <div
+      *cdkVirtualFor="let row of rows(); let index = index; trackBy: trackRow; templateCacheSize: 0"
+      class="photo-grid__row"
+    >
       @for (photo of row; track photo.internalId) {
-        <ps-photo-tile [photo]="photo" />
+        <ps-photo-tile [photo]="photo" [priority]="index === 0" />
       }
     </div>
   </cdk-virtual-scroll-viewport>

@@ -1,5 +1,13 @@
 import { NgOptimizedImage } from '@angular/common';
-import { afterNextRender, Component, ElementRef, input, linkedSignal, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  booleanAttribute,
+  Component,
+  ElementRef,
+  input,
+  linkedSignal,
+  viewChild,
+} from '@angular/core';
 import { Photo } from '../picsum/photo';
 
 @Component({
@@ -14,6 +22,8 @@ import { Photo } from '../picsum/photo';
       sizes="(min-width: 900px) 20vw, (min-width: 600px) 33vw, 50vw"
       width="400"
       [alt]="'Photo by ' + photo().author"
+      [priority]="priority()"
+      (error)="loaded.set(true)"
       (load)="loaded.set(true)"
     />
   `,
@@ -24,6 +34,7 @@ import { Photo } from '../picsum/photo';
 })
 export class PhotoTile {
   readonly photo = input.required<Photo>();
+  readonly priority = input(false, { transform: booleanAttribute });
 
   protected readonly loaded = linkedSignal<Photo, boolean>({ source: this.photo, computation: () => false });
 

@@ -4,6 +4,7 @@ import {
   afterRenderEffect,
   Component,
   DestroyRef,
+  DOCUMENT,
   ElementRef,
   inject,
   viewChild,
@@ -28,39 +29,69 @@ export class Photos {
   private readonly grid = viewChild.required(PhotoGrid);
   private readonly endOfStream = viewChild.required<ElementRef<HTMLElement>>('endOfStream');
   private readonly scroller = inject(ViewportScroller);
+  private readonly window = inject(DOCUMENT).defaultView;
+  private scrolledTo = 0;
   private restored = false;
 
   constructor() {
     const destroyRef = inject(DestroyRef);
 
     afterNextRender(() => {
-      const observer = new IntersectionObserver((entries) => this.loadMoreWhenSeen(entries), {
-        rootMargin: `${PREFETCH_SCREENS * 100}% 0px`,
-      });
+      const onScroll = (): void => this.followTheScroll();
 
-      observer.observe(this.endOfStream().nativeElement);
+      this.window?.addEventListener('scroll', onScroll, { passive: true });
 
       destroyRef.onDestroy(() => {
-        observer.disconnect();
-        this.store.rememberScrollOffset(this.scroller.getScrollPosition()[1]);
+        this.window?.removeEventListener('scroll', onScroll);
+        this.store.rememberScrollOffset(this.scrolledTo);
       });
     });
 
-    afterRenderEffect(() => {
-      const offset = this.store.scrollOffset();
+    // Runs again after every batch, so a screen taller than one batch keeps filling on its own
+    // instead of waiting for a scroll that never comes.
+    afterRenderEffect(() => this.loadMoreWhenTheEndIsNear());
 
-      if (this.restored || offset === 0 || !this.grid().ready()) {
-        return;
-      }
-
-      this.restored = true;
-      this.scroller.scrollToPosition([0, offset]);
-    });
+    afterRenderEffect(() => this.returnToWhereYouWere());
   }
 
-  private loadMoreWhenSeen(entries: IntersectionObserverEntry[]): void {
-    if (entries.some((entry) => entry.isIntersecting)) {
-      this.store.loadMore();
+  // Navigating away removes the grid first, which shrinks the page and drops the scroll position,
+  // so it has to be followed while the screen is still there rather than read on the way out.
+  private followTheScroll(): void {
+    this.scrolledTo = this.scroller.getScrollPosition()[1];
+
+    if (this.store.stalled()) {
+      this.store.resume();
     }
+
+    this.loadMoreWhenTheEndIsNear();
+  }
+
+  private loadMoreWhenTheEndIsNear(): void {
+    if (this.store.loading() || this.store.stalled() || !this.theEndIsNear()) {
+      return;
+    }
+
+    this.store.loadMore();
+  }
+
+  private theEndIsNear(): boolean {
+    if (!this.window) {
+      return false;
+    }
+
+    const distance = this.endOfStream().nativeElement.getBoundingClientRect().top;
+
+    return distance <= this.window.innerHeight * (1 + PREFETCH_SCREENS);
+  }
+
+  private returnToWhereYouWere(): void {
+    const offset = this.store.scrollOffset();
+
+    if (this.restored || offset === 0 || !this.grid().ready()) {
+      return;
+    }
+
+    this.restored = true;
+    this.scroller.scrollToPosition([0, offset]);
   }
 }

@@ -1,7 +1,7 @@
 import { ViewportScroller } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, Subject } from 'rxjs';
-import { FakeIntersectionObserver, FakeResizeObserver } from '../../fake-observers';
+import { FakeResizeObserver } from '../../fake-observers';
 import { Photo } from '../picsum/photo';
 import { PicsumApi } from '../picsum/picsum-api';
 import { providePicsumImageLoader } from '../picsum/picsum-image-loader';
@@ -12,6 +12,7 @@ const SCROLLED_TO = 900;
 const COLUMNS = 5;
 const GRID_WIDTH = 1236;
 const GRID_GAP = '14px';
+const OUT_OF_REACH = 99999;
 
 function photo(id: string): Photo {
   return { internalId: `${id}-0`, id, author: `Author ${id}`, width: 5000, height: 3333 };
@@ -23,6 +24,7 @@ function batchOf(size: number): Photo[] {
 
 describe('Photos', () => {
   let fixture: ComponentFixture<Photos>;
+  let endDistance = OUT_OF_REACH;
 
   async function showPhotos(scrolledTo = 0) {
     const loadMore = vi.fn<() => Observable<Photo[]>>(() => of([]));
@@ -53,8 +55,9 @@ describe('Photos', () => {
     return { loadMore, scrollToPosition, store };
   }
 
-  async function reachTheEndOfTheStream(): Promise<void> {
-    FakeIntersectionObserver.latest?.comeIntoView();
+  async function scrollTowardsTheEnd(): Promise<void> {
+    endDistance = 0;
+    window.dispatchEvent(new Event('scroll'));
 
     await fixture.whenStable();
   }
@@ -77,21 +80,29 @@ describe('Photos', () => {
     return fixture.nativeElement.querySelectorAll('.photos__placeholder-cell');
   }
 
+  beforeEach(() => {
+    endDistance = OUT_OF_REACH;
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({ top: endDistance }) as DOMRect);
+  });
+
   afterEach(() => {
-    FakeIntersectionObserver.latest = undefined;
     FakeResizeObserver.latest = undefined;
+    vi.restoreAllMocks();
   });
 
-  it('looks for the end of the stream a screen early', async () => {
-    await showPhotos();
-
-    expect(FakeIntersectionObserver.latest?.options.rootMargin).toBe('100% 0px');
-  });
-
-  it('asks for more photos when the end of the stream comes into view', async () => {
+  it('leaves the stream alone while the end of it is far away', async () => {
     const { loadMore } = await showPhotos();
 
-    await reachTheEndOfTheStream();
+    window.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+
+    expect(loadMore).not.toHaveBeenCalled();
+  });
+
+  it('asks for more photos once the end of the stream is near', async () => {
+    const { loadMore } = await showPhotos();
+
+    await scrollTowardsTheEnd();
 
     expect(loadMore).toHaveBeenCalled();
   });
@@ -104,7 +115,7 @@ describe('Photos', () => {
 
     expect(spinner()).toBeNull();
 
-    await reachTheEndOfTheStream();
+    await scrollTowardsTheEnd();
 
     expect(spinner()).not.toBeNull();
 
@@ -121,7 +132,7 @@ describe('Photos', () => {
 
     loadMore.mockReturnValue(batch);
 
-    await reachTheEndOfTheStream();
+    await scrollTowardsTheEnd();
 
     expect(placeholders().length).toBeGreaterThan(0);
 
@@ -135,17 +146,15 @@ describe('Photos', () => {
   it('remembers where the stream was scrolled when you navigate away', async () => {
     const { store } = await showPhotos();
 
+    window.dispatchEvent(new Event('scroll'));
     fixture.destroy();
 
     expect(store.scrollOffset()).toBe(SCROLLED_TO);
   });
 
   it('puts you back where you were when you return to the stream', async () => {
-    const { loadMore, scrollToPosition } = await showPhotos(1200);
+    const { scrollToPosition } = await showPhotos(1200);
 
-    loadMore.mockReturnValue(of(batchOf(30)));
-
-    await reachTheEndOfTheStream();
     await layOutGrid();
 
     expect(scrollToPosition).toHaveBeenCalledWith([0, 1200]);
