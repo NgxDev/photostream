@@ -1,0 +1,26 @@
+@if (!store.loaded()) {
+  <div class="favorites__status" role="status">
+    <mat-spinner diameter="18" aria-hidden="true" />
+    <span>Loading favorites</span>
+  </div>
+} @else if (store.entities().length === 0) {
+  <ps-empty-state
+    heading="Nothing saved yet"
+    icon="favorite"
+    message="Photos you save from the stream will live here. Tap any photo you love to keep it."
+  >
+    <a class="favorites__cta" matButton="filled" routerLink="/">
+      <span class="favorites__cta-glyph"><mat-icon inline>grid_view</mat-icon></span>
+      Browse photos
+    </a>
+  </ps-empty-state>
+} @else {
+  <div class="favorites">
+    <h1 class="favorites__title">
+      Favorites
+      <span class="favorites__count">{{ count() }}</span>
+    </h1>
+
+    <ps-photo-grid [photos]="store.entities()" />
+  </div>
+}
