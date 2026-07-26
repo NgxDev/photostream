@@ -9,6 +9,7 @@ import { PhotoGrid } from './photo-grid';
 const COLUMNS = 5;
 const GRID_GAP = '14px';
 const GRID_WIDTH = 1236;
+const ROW_HEIGHT = 368;
 
 function batchOf(size: number): Photo[] {
   return Array.from({ length: size }, (_, index) => {
@@ -65,5 +66,12 @@ describe('PhotoGrid', () => {
     await showGrid(batchOf(7));
 
     expect(renderedRows()).toEqual([]);
+  });
+
+  it('is as tall as the rows it holds', async () => {
+    await showGrid(batchOf(7));
+    await measureAt(GRID_WIDTH);
+
+    expect((fixture.nativeElement as HTMLElement).style.minHeight).toBe(`${2 * ROW_HEIGHT}px`);
   });
 });

@@ -102,15 +102,25 @@ describe('Photos', () => {
   it('asks for more photos once the end of the stream is near', async () => {
     const { loadMore } = await showPhotos();
 
+    await layOutGrid();
     await scrollTowardsTheEnd();
 
     expect(loadMore).toHaveBeenCalled();
+  });
+
+  it('does not ask for more photos before the grid has been laid out', async () => {
+    const { loadMore } = await showPhotos();
+
+    await scrollTowardsTheEnd();
+
+    expect(loadMore).not.toHaveBeenCalled();
   });
 
   it('shows the spinner only while a batch is on its way', async () => {
     const batch = new Subject<Photo[]>();
     const { loadMore } = await showPhotos();
 
+    await layOutGrid();
     loadMore.mockReturnValue(batch);
 
     expect(spinner()).toBeNull();
@@ -130,6 +140,7 @@ describe('Photos', () => {
     const batch = new Subject<Photo[]>();
     const { loadMore } = await showPhotos();
 
+    await layOutGrid();
     loadMore.mockReturnValue(batch);
 
     await scrollTowardsTheEnd();

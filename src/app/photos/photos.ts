@@ -67,7 +67,7 @@ export class Photos {
   }
 
   private loadMoreWhenTheEndIsNear(): void {
-    if (this.store.loading() || this.store.stalled() || !this.theEndIsNear()) {
+    if (!this.grid().ready() || this.store.loading() || this.store.stalled() || !this.theEndIsNear()) {
       return;
     }
 

@@ -45,6 +45,9 @@ function toRows(photos: readonly Photo[], columns: number): readonly Photo[][] {
   ],
   templateUrl: './photo-grid.html',
   styleUrl: './photo-grid.scss',
+  host: {
+    '[style.minHeight.px]': 'rows().length * rowHeight()',
+  },
 })
 export class PhotoGrid {
   readonly photos = input.required<readonly Photo[]>();
