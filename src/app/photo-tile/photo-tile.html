@@ -4,7 +4,10 @@
   [ngSrc]="photo().id"
   alt=""
   height="600"
-  sizes="(min-width: 900px) 20vw, (min-width: 600px) 33vw, 50vw"
+  sizes="(min-width: 1384px) min(256px, calc((100vw - 118px) / 6)),
+         (min-width: 900px) calc((100vw - 104px) / 5),
+         (min-width: 600px) calc((100vw - 64px) / 3),
+         calc((100vw - 38px) / 2)"
   width="400"
   [priority]="priority()"
   (error)="loaded.set(true)"
