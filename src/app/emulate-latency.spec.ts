@@ -1,8 +1,5 @@
 import { of, throwError } from 'rxjs';
-import { emulateLatency } from './emulate-latency';
-
-const MIN_DELAY_MS = 200;
-const MAX_DELAY_MS = 300;
+import { emulateLatency, MAX_LATENCY_MS, MIN_LATENCY_MS } from './emulate-latency';
 
 describe('emulateLatency', () => {
   beforeEach(() => {
@@ -20,7 +17,7 @@ describe('emulateLatency', () => {
       .pipe(emulateLatency())
       .subscribe((value) => received.push(value));
 
-    await vi.advanceTimersByTimeAsync(MIN_DELAY_MS - 1);
+    await vi.advanceTimersByTimeAsync(MIN_LATENCY_MS - 1);
 
     expect(received).toEqual([]);
   });
@@ -31,7 +28,7 @@ describe('emulateLatency', () => {
       .pipe(emulateLatency())
       .subscribe((value) => received.push(value));
 
-    await vi.advanceTimersByTimeAsync(MAX_DELAY_MS);
+    await vi.advanceTimersByTimeAsync(MAX_LATENCY_MS);
 
     expect(received).toEqual(['photo']);
   });
@@ -43,7 +40,7 @@ describe('emulateLatency', () => {
       .pipe(emulateLatency())
       .subscribe({ next: (value) => received.push(value), complete: () => (completed = true) });
 
-    await vi.advanceTimersByTimeAsync(MAX_DELAY_MS);
+    await vi.advanceTimersByTimeAsync(MAX_LATENCY_MS);
 
     expect(received).toEqual([1, 2, 3]);
     expect(completed).toBe(true);
@@ -56,7 +53,7 @@ describe('emulateLatency', () => {
       .pipe(emulateLatency())
       .subscribe({ error: (error) => (caught = error) });
 
-    await vi.advanceTimersByTimeAsync(MAX_DELAY_MS);
+    await vi.advanceTimersByTimeAsync(MAX_LATENCY_MS);
 
     expect(caught).toBe(failure);
   });
@@ -69,12 +66,12 @@ describe('emulateLatency', () => {
 
     delayed.subscribe((value) => first.push(value));
     delayed.subscribe((value) => second.push(value));
-    await vi.advanceTimersByTimeAsync(MIN_DELAY_MS);
+    await vi.advanceTimersByTimeAsync(MIN_LATENCY_MS);
 
     expect(first).toEqual(['photo']);
     expect(second).toEqual([]);
 
-    await vi.advanceTimersByTimeAsync(MAX_DELAY_MS - MIN_DELAY_MS);
+    await vi.advanceTimersByTimeAsync(MAX_LATENCY_MS - MIN_LATENCY_MS);
 
     expect(second).toEqual(['photo']);
   });
