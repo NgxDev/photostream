@@ -13,12 +13,19 @@ import {
   ElementRef,
   inject,
   input,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
-import { PhotoTile } from '../photo-tile/photo-tile';
+import { PhotoTile, PhotoTileMode } from '../photo-tile/photo-tile';
 import { Photo } from '../picsum/photo';
 import { gridMetrics } from './grid-metrics';
+
+export interface SaveState {
+  readonly ids: ReadonlySet<string>;
+  readonly pending: ReadonlySet<string>;
+  readonly justSaved: string | null;
+}
 
 function toRows(photos: readonly Photo[], columns: number): readonly Photo[][] {
   if (columns < 1) {
@@ -51,7 +58,27 @@ function toRows(photos: readonly Photo[], columns: number): readonly Photo[][] {
 })
 export class PhotoGrid {
   readonly photos = input.required<readonly Photo[]>();
+  readonly saveState = input<SaveState | null>(null);
+  readonly save = output<Photo>();
   readonly ready = computed(() => this.rowHeight() > 0);
+
+  protected modeFor(photo: Photo): PhotoTileMode {
+    const state = this.saveState();
+
+    if (!state) {
+      return 'link';
+    }
+
+    if (state.pending.has(photo.id)) {
+      return 'saving';
+    }
+
+    if (state.justSaved === photo.id) {
+      return 'just-saved';
+    }
+
+    return state.ids.has(photo.id) ? 'saved' : 'save';
+  }
 
   protected readonly rowHeight = signal(0);
   protected readonly rows = computed(() => toRows(this.photos(), this.columns()));

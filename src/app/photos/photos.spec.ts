@@ -1,7 +1,9 @@
 import { ViewportScroller } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { FakeResizeObserver } from '../../fake-observers';
+import { FavoritesApi } from '../favorites/favorites-api';
 import { Photo } from '../picsum/photo';
 import { PicsumApi } from '../picsum/picsum-api';
 import { providePicsumImageLoader } from '../picsum/picsum-image-loader';
@@ -26,10 +28,11 @@ describe('Photos', () => {
   let fixture: ComponentFixture<Photos>;
   let endDistance = OUT_OF_REACH;
 
-  async function showPhotos(scrolledTo = 0) {
+  async function showPhotos(scrolledTo = 0, favorites: Observable<Photo[]> = of([])) {
     const loadMore = vi.fn<() => Observable<Photo[]>>(() => of([]));
     const scrollToPosition = vi.fn();
     const api: Pick<PicsumApi, 'loadMore'> = { loadMore };
+    const favoritesApi: Pick<FavoritesApi, 'read' | 'add'> = { read: () => favorites, add: (photo) => of(photo) };
     const scroller: Pick<ViewportScroller, 'getScrollPosition' | 'scrollToPosition'> = {
       getScrollPosition: () => [0, SCROLLED_TO],
       scrollToPosition,
@@ -38,7 +41,9 @@ describe('Photos', () => {
     TestBed.configureTestingModule({
       providers: [
         providePicsumImageLoader(),
+        provideRouter([]),
         { provide: PicsumApi, useValue: api },
+        { provide: FavoritesApi, useValue: favoritesApi },
         { provide: ViewportScroller, useValue: scroller },
       ],
     });
@@ -78,6 +83,10 @@ describe('Photos', () => {
 
   function placeholders(): NodeListOf<Element> {
     return fixture.nativeElement.querySelectorAll('.photos__placeholder-cell');
+  }
+
+  function tiles(): NodeListOf<Element> {
+    return fixture.nativeElement.querySelectorAll('ps-photo-tile');
   }
 
   beforeEach(() => {
@@ -151,6 +160,34 @@ describe('Photos', () => {
     batch.complete();
     await fixture.whenStable();
 
+    expect(placeholders()).toHaveLength(0);
+  });
+
+  it('asks for photos before it knows which ones are saved', async () => {
+    const { loadMore } = await showPhotos(0, new Subject<Photo[]>());
+
+    await layOutGrid();
+    await scrollTowardsTheEnd();
+
+    expect(loadMore).toHaveBeenCalled();
+  });
+
+  it('keeps the placeholders up until it knows which photos are saved', async () => {
+    const favorites = new Subject<Photo[]>();
+    const { loadMore } = await showPhotos(0, favorites);
+
+    await layOutGrid();
+    loadMore.mockReturnValue(of(batchOf(30)));
+    await scrollTowardsTheEnd();
+
+    expect(tiles()).toHaveLength(0);
+    expect(placeholders().length).toBeGreaterThan(0);
+
+    favorites.next([]);
+    favorites.complete();
+    await fixture.whenStable();
+
+    expect(tiles().length).toBeGreaterThan(0);
     expect(placeholders()).toHaveLength(0);
   });
 
