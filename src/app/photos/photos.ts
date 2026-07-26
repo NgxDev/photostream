@@ -3,6 +3,7 @@ import {
   afterNextRender,
   afterRenderEffect,
   Component,
+  computed,
   DestroyRef,
   DOCUMENT,
   ElementRef,
@@ -10,7 +11,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { PhotoGrid } from '../photo-grid/photo-grid';
+import { FavoritesStore } from '../favorites/favorites-store';
+import { PhotoGrid, SaveState } from '../photo-grid/photo-grid';
 import { PAGE_SIZE } from '../picsum/picsum-api';
 import { PhotoStreamStore } from './photo-stream-store';
 
@@ -24,7 +26,16 @@ export const PREFETCH_SCREENS = 1;
 })
 export class Photos {
   protected readonly store = inject(PhotoStreamStore);
+  protected readonly favorites = inject(FavoritesStore);
   protected readonly placeholders = Array.from({ length: PAGE_SIZE });
+
+  protected readonly visiblePhotos = computed(() => (this.favorites.loaded() ? this.store.entities() : []));
+
+  protected readonly saveState = computed<SaveState>(() => ({
+    ids: new Set(this.favorites.entities().map(({ id }) => id)),
+    pending: new Set(this.favorites.pendingIds()),
+    justSaved: this.favorites.justSavedId(),
+  }));
 
   private readonly grid = viewChild.required(PhotoGrid);
   private readonly endOfStream = viewChild.required<ElementRef<HTMLElement>>('endOfStream');
@@ -67,7 +78,11 @@ export class Photos {
   }
 
   private loadMoreWhenTheEndIsNear(): void {
-    if (this.store.loading() || this.store.stalled() || !this.theEndIsNear()) {
+    if (!this.grid().ready() || this.store.loading() || this.store.stalled()) {
+      return;
+    }
+
+    if (this.store.entities().length > 0 && !this.theEndIsNear()) {
       return;
     }
 

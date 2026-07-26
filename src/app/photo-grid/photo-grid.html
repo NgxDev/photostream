@@ -10,7 +10,7 @@
       class="photo-grid__row"
     >
       @for (photo of row; track photo.internalId) {
-        <ps-photo-tile [photo]="photo" [priority]="index === 0" />
+        <ps-photo-tile [mode]="modeFor(photo)" [photo]="photo" [priority]="index === 0" (save)="save.emit($event)" />
       }
     </div>
   </cdk-virtual-scroll-viewport>

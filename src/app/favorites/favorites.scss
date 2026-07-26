@@ -1,0 +1,70 @@
+@use '@angular/material' as mat;
+
+.favorites {
+  box-sizing: border-box;
+  max-width: var(--ps-page-max);
+  margin-inline: auto;
+  padding: 16px var(--ps-page-padding) 20px;
+
+  &__status {
+    display: flex;
+    min-height: 74px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--ps-muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  &__title {
+    display: flex;
+    align-items: baseline;
+    margin: 0 0 12px;
+    gap: 8px;
+    color: var(--ps-ink);
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  &__count {
+    color: var(--ps-muted);
+    font-family: var(--ps-font-mono);
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  &__cta {
+    @include mat.button-overrides(
+      (
+        filled-container-color: var(--ps-ink),
+        filled-label-text-color: var(--ps-page),
+      )
+    );
+  }
+
+  &__cta-glyph {
+    display: inline-grid;
+    margin-inline-end: 9px;
+    place-items: center;
+    font-size: 15px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+}
+
+@media (min-width: 900px) {
+  .favorites {
+    padding: 22px var(--ps-page-padding) 28px;
+
+    &__title {
+      margin-bottom: 14px;
+      gap: 10px;
+      font-size: 20px;
+    }
+
+    &__count {
+      font-size: 12px;
+    }
+  }
+}

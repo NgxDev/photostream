@@ -1,0 +1,46 @@
+<img
+  #image
+  class="photo-tile__image"
+  [ngSrc]="photo().id"
+  alt=""
+  height="600"
+  sizes="(min-width: 900px) 20vw, (min-width: 600px) 33vw, 50vw"
+  width="400"
+  [priority]="priority()"
+  (error)="loaded.set(true)"
+  (load)="loaded.set(true)"
+/>
+
+@if (showsBadge()) {
+  <span class="photo-tile__badge" aria-hidden="true">
+    <span class="photo-tile__glyph"><mat-icon inline>favorite</mat-icon></span>
+  </span>
+}
+
+@if (showsOverlay()) {
+  <span class="photo-tile__overlay" aria-hidden="true">
+    <span class="photo-tile__mark" [class.photo-tile__mark--confirmed]="showsConfirmation()">
+      @if (showsConfirmation()) {
+        <span class="photo-tile__glyph photo-tile__glyph--large"><mat-icon inline>favorite</mat-icon></span>
+      } @else {
+        <mat-spinner diameter="24" />
+      }
+    </span>
+
+    @if (showsConfirmation()) {
+      <span class="photo-tile__confirmation">Saved</span>
+    }
+  </span>
+}
+
+@if (isLink()) {
+  <a class="photo-tile__control" [attr.aria-label]="label()" [routerLink]="['/photos', photo().id]"></a>
+} @else {
+  <button
+    class="photo-tile__control"
+    type="button"
+    [attr.aria-disabled]="!canSave()"
+    [attr.aria-label]="label()"
+    (click)="requestSave()"
+  ></button>
+}

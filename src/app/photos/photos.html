@@ -1,7 +1,7 @@
 <div class="photos">
-  <ps-photo-grid [photos]="store.entities()" />
+  <ps-photo-grid [photos]="visiblePhotos()" [saveState]="saveState()" (save)="favorites.save($event)" />
 
-  @if (store.loading() && store.entities().length === 0) {
+  @if (visiblePhotos().length === 0) {
     <div class="photos__placeholder" aria-hidden="true">
       @for (cell of placeholders; track $index) {
         <div class="photos__placeholder-cell ps-shimmer"></div>
