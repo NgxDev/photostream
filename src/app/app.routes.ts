@@ -17,6 +17,10 @@ export const routes: Routes = [
     loadComponent: () => import('./favorites/photo-detail/photo-detail').then((m) => m.PhotoDetail),
   },
   {
+    path: 'shell',
+    children: [],
+  },
+  {
     path: '**',
     redirectTo: '/',
   },
