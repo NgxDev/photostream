@@ -1,0 +1,12 @@
+:host {
+  display: block;
+}
+
+.photo-grid {
+  &__row {
+    display: grid;
+    grid-template-columns: repeat(var(--ps-columns), 1fr);
+    gap: var(--ps-grid-gap);
+    padding-bottom: var(--ps-grid-gap);
+  }
+}

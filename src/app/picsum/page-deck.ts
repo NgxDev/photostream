@@ -4,11 +4,20 @@ export class PageDeck {
   private pages: readonly number[] = [];
   private cursor = 0;
   private lastDrawn: number | null = null;
+  private passes = 0;
 
   constructor(private readonly pageCount: number) {}
 
+  get cycle(): number {
+    return this.passes;
+  }
+
   next(): number {
     if (this.cursor >= this.pages.length) {
+      if (this.pages.length > 0) {
+        this.passes++;
+      }
+
       this.pages = this.shuffledPages();
       this.cursor = 0;
     }
