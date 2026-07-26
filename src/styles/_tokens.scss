@@ -5,6 +5,13 @@
 // there is one token set rather than a theme class per palette. This is the same mechanism
 // mat.theme() uses, which keeps our tokens and Material's --mat-sys-* tokens in step.
 
+// 256px is a srcset candidate, so a tile capped there is drawn at the size it was fetched.
+$tile-max: 256px;
+$gap-wide: 14px;
+$padding-wide: 24px;
+$page-max: 6 * $tile-max + 5 * $gap-wide + 2 * $padding-wide;
+$sixth-column-at: 5 * $tile-max + 4 * $gap-wide + 2 * $padding-wide;
+
 :root {
   // Surfaces — light "warm paper" / dark "blue hour"
   --ps-page: light-dark(#f6f4f0, #131720);
@@ -63,6 +70,7 @@
   --ps-columns: 2;
   --ps-grid-gap: 10px;
   --ps-page-padding: 14px;
+  --ps-page-max: #{$page-max};
   --ps-header-height: 104px;
 
   @media (min-width: 600px) {
@@ -74,7 +82,11 @@
 
   @media (min-width: 900px) {
     --ps-columns: 5;
-    --ps-grid-gap: 14px;
-    --ps-page-padding: 24px;
+    --ps-grid-gap: #{$gap-wide};
+    --ps-page-padding: #{$padding-wide};
+  }
+
+  @media (min-width: $sixth-column-at) {
+    --ps-columns: 6;
   }
 }

@@ -35,6 +35,18 @@ describe('PageDeck', () => {
     expect(drawn.filter((page, index) => index > 0 && page === drawn[index - 1])).toEqual([]);
   });
 
+  it('advances the cycle only once the whole deck has been drawn', () => {
+    const deck = new PageDeck(PAGE_COUNT);
+
+    draw(deck, PAGE_COUNT);
+
+    expect(deck.cycle).toBe(0);
+
+    deck.next();
+
+    expect(deck.cycle).toBe(1);
+  });
+
   it('keeps drawing the only page of a single-page deck', () => {
     const deck = new PageDeck(1);
 

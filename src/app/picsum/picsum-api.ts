@@ -8,7 +8,7 @@ import { PICSUM_ORIGIN } from './picsum-urls';
 import { shuffle } from './shuffle';
 
 const LIST_URL = `${PICSUM_ORIGIN}/v2/list`;
-const PAGE_SIZE = 30;
+export const PAGE_SIZE = 30;
 const FULL_PAGES_IN_CATALOG = 33;
 
 interface PicsumListItem {
@@ -18,8 +18,14 @@ interface PicsumListItem {
   height: number;
 }
 
-function toShuffledPhotos(items: PicsumListItem[]): Photo[] {
-  return shuffle(items).map(({ id, author, width, height }) => ({ id, author, width, height }));
+function toShuffledPhotos(items: PicsumListItem[], cycle: number): Photo[] {
+  return shuffle(items).map(({ id, author, width, height }) => ({
+    internalId: `${id}-${cycle}`,
+    id,
+    author,
+    width,
+    height,
+  }));
 }
 
 @Service()
@@ -27,9 +33,13 @@ export class PicsumApi {
   private readonly http = inject(HttpClient);
   private readonly deck = new PageDeck(FULL_PAGES_IN_CATALOG);
 
-  nextBatch(): Observable<Photo[]> {
+  loadMore(): Observable<Photo[]> {
     const params = { page: this.deck.next(), limit: PAGE_SIZE };
+    const cycle = this.deck.cycle;
 
-    return this.http.get<PicsumListItem[]>(LIST_URL, { params }).pipe(emulateLatency(), map(toShuffledPhotos));
+    return this.http.get<PicsumListItem[]>(LIST_URL, { params }).pipe(
+      emulateLatency(),
+      map((items) => toShuffledPhotos(items, cycle))
+    );
   }
 }

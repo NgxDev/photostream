@@ -25,7 +25,7 @@ describe('picsumImageUrl', () => {
 
 describe('picsumDownloadUrl', () => {
   it('points at the original file, at full size and with no extension', () => {
-    const photo: Photo = { id: '1084', author: 'Jay Ruzesky', width: 4579, height: 3271 };
+    const photo: Photo = { internalId: '1084-0', id: '1084', author: 'Jay Ruzesky', width: 4579, height: 3271 };
 
     expect(picsumDownloadUrl(photo)).toBe('https://picsum.photos/id/1084/4579/3271');
   });

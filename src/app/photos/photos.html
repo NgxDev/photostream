@@ -1,0 +1,18 @@
+<div class="photos">
+  <ps-photo-grid [photos]="store.entities()" />
+
+  @if (store.loading() && store.entities().length === 0) {
+    <div class="photos__placeholder" aria-hidden="true">
+      @for (cell of placeholders; track $index) {
+        <div class="photos__placeholder-cell ps-shimmer"></div>
+      }
+    </div>
+  }
+
+  <div #endOfStream class="photos__end" role="status">
+    @if (store.loading()) {
+      <mat-spinner diameter="18" aria-hidden="true" />
+      <span>Loading more photos</span>
+    }
+  </div>
+</div>

@@ -45,7 +45,7 @@ describe('PicsumApi', () => {
 
   async function drawBatch(items = catalogPage) {
     let photos: Photo[] | undefined;
-    api.nextBatch().subscribe((batch) => (photos = batch));
+    api.loadMore().subscribe((batch) => (photos = batch));
 
     const request = expectListRequest();
     const page = Number(request.request.params.get('page'));
@@ -57,7 +57,7 @@ describe('PicsumApi', () => {
   }
 
   it('asks picsum for one catalog page of 30 photos', async () => {
-    api.nextBatch().subscribe();
+    api.loadMore().subscribe();
 
     const request = expectListRequest();
 
@@ -68,15 +68,28 @@ describe('PicsumApi', () => {
     await vi.advanceTimersByTimeAsync(MAX_DELAY_MS);
   });
 
-  it('keeps only the fields every photo URL is derived from', async () => {
+  it('keeps only the fields every photo URL is derived from, plus a key for the stream', async () => {
     const { photos } = await drawBatch([listItem(7)]);
 
-    expect(photos).toEqual([{ id: '7', author: 'Author 7', width: 5000, height: 3333 }]);
+    expect(photos).toEqual([{ internalId: '7-0', id: '7', author: 'Author 7', width: 5000, height: 3333 }]);
+  });
+
+  it('keys a photo by which pass over the catalog delivered it', async () => {
+    const firstPass = await drawBatch([listItem(7)]);
+
+    for (let batch = 1; batch < PAGE_COUNT; batch++) {
+      await drawBatch([listItem(7)]);
+    }
+
+    const secondPass = await drawBatch([listItem(7)]);
+
+    expect(firstPass.photos[0].internalId).toBe('7-0');
+    expect(secondPass.photos[0].internalId).toBe('7-1');
   });
 
   it('emits only once the emulated latency has elapsed', async () => {
     let photos: Photo[] | undefined;
-    api.nextBatch().subscribe((batch) => (photos = batch));
+    api.loadMore().subscribe((batch) => (photos = batch));
     expectListRequest().flush([listItem(1)]);
 
     await vi.advanceTimersByTimeAsync(MIN_DELAY_MS - 1);

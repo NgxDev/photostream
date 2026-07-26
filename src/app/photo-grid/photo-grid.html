@@ -1,0 +1,14 @@
+@if (ready()) {
+  <cdk-virtual-scroll-viewport
+    scrollWindow
+    [itemSize]="rowHeight()"
+    [maxBufferPx]="rowHeight() * 4"
+    [minBufferPx]="rowHeight() * 2"
+  >
+    <div *cdkVirtualFor="let row of rows(); trackBy: trackRow" class="photo-grid__row">
+      @for (photo of row; track photo.internalId) {
+        <ps-photo-tile [photo]="photo" />
+      }
+    </div>
+  </cdk-virtual-scroll-viewport>
+}

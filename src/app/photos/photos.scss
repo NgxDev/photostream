@@ -1,0 +1,29 @@
+.photos {
+  box-sizing: border-box;
+  max-width: var(--ps-page-max);
+  margin-inline: auto;
+  padding: 20px var(--ps-page-padding) 0;
+
+  &__placeholder {
+    display: grid;
+    grid-template-columns: repeat(var(--ps-columns), 1fr);
+    gap: var(--ps-grid-gap);
+  }
+
+  &__placeholder-cell {
+    aspect-ratio: 2 / 3;
+    border-radius: var(--ps-radius-tile);
+    background-color: var(--ps-tile);
+  }
+
+  &__end {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 74px;
+    color: var(--ps-muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
