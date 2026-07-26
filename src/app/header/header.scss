@@ -3,7 +3,7 @@
   top: 0;
   z-index: 2;
   background: var(--ps-surface);
-  border-bottom: 1px solid var(--ps-border);
+  border-bottom: var(--ps-header-border) solid var(--ps-border);
 
   &__content {
     box-sizing: border-box;

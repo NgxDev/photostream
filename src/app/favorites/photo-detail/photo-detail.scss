@@ -1,0 +1,223 @@
+@use '@angular/material' as mat;
+
+.photo-detail {
+  display: flex;
+  box-sizing: border-box;
+  max-width: var(--ps-page-max);
+  max-height: calc(100dvh - var(--ps-header-height) - var(--ps-header-border));
+  flex-direction: column;
+  margin-inline: auto;
+  gap: 12px;
+  padding: var(--ps-page-padding);
+
+  &__status {
+    display: flex;
+    min-height: 74px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--ps-muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  &__stage {
+    position: relative;
+    display: flex;
+    flex: 0 1 auto;
+    max-width: 100%;
+    min-height: 200px;
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--ps-border);
+    border-radius: var(--ps-radius-stage);
+    background-color: var(--ps-stage);
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 240ms ease;
+
+    .ps-shimmer > & {
+      opacity: 0;
+      transition: none;
+    }
+  }
+
+  &__chevron {
+    position: absolute;
+    top: 50%;
+    display: flex;
+    border: 1px solid var(--ps-overlay-border);
+    border-radius: var(--ps-radius-pill);
+    background-color: var(--ps-overlay-surface);
+    transform: translateY(-50%);
+
+    @include mat.icon-button-overrides(
+      (
+        state-layer-size: 42px,
+        icon-size: 20px,
+        container-shape: var(--ps-radius-pill),
+        icon-color: var(--ps-overlay-ink),
+        state-layer-color: var(--ps-overlay-ink),
+      )
+    );
+
+    &--previous {
+      left: 10px;
+    }
+
+    &--next {
+      right: 10px;
+    }
+  }
+
+  &__counter {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    padding: 4px 10px;
+    border-radius: var(--ps-radius-pill);
+    background-color: var(--ps-chip-surface);
+    color: var(--ps-chip-ink);
+    font-family: var(--ps-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    transform: translateX(-50%);
+  }
+
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  &__about {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__author {
+    margin: 0;
+    color: var(--ps-ink);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  &__dimensions {
+    margin: 0;
+    color: var(--ps-muted);
+    font-family: var(--ps-font-mono);
+    font-size: 11px;
+  }
+
+  &__remove {
+    @include mat.button-overrides(
+      (
+        filled-horizontal-padding: 20px,
+      )
+    );
+    @include mat.progress-spinner-overrides(
+      (
+        active-indicator-color: var(--ps-on-accent),
+      )
+    );
+  }
+
+  &__back {
+    @include mat.button-overrides(
+      (
+        filled-container-color: var(--ps-ink),
+        filled-label-text-color: var(--ps-page),
+      )
+    );
+  }
+
+  &__glyph {
+    display: inline-grid;
+    margin-inline-end: 8px;
+    place-items: center;
+    font-size: 16px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  &__chevron-glyph {
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    line-height: 1;
+  }
+}
+
+@media (min-width: 600px) {
+  .photo-detail {
+    gap: 14px;
+    padding: 18px var(--ps-page-padding) 20px;
+
+    &__chevron {
+      &--previous {
+        left: 14px;
+      }
+
+      &--next {
+        right: 14px;
+      }
+    }
+
+    &__counter {
+      bottom: 12px;
+    }
+
+    &__summary {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    &__about {
+      gap: 4px;
+    }
+
+    &__author {
+      font-size: 16px;
+    }
+
+    &__dimensions {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (min-width: 900px) {
+  .photo-detail {
+    gap: 16px;
+    padding: 20px var(--ps-page-padding) 24px;
+
+    &__chevron {
+      &--previous {
+        left: 16px;
+      }
+
+      &--next {
+        right: 16px;
+      }
+    }
+
+    &__counter {
+      bottom: 14px;
+    }
+
+    &__author {
+      font-size: 17px;
+    }
+  }
+}

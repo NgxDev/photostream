@@ -107,4 +107,26 @@ describe('FavoritesApi', () => {
 
     expect(write).not.toHaveBeenCalled();
   });
+
+  it('stores the list without the photo that was removed', async () => {
+    stored = [storedPhoto('9'), storedPhoto('7'), storedPhoto('1')];
+
+    await response(api.remove('7'));
+
+    expect(write).toHaveBeenCalledWith(STORAGE_KEY, [storedPhoto('9'), storedPhoto('1')]);
+  });
+
+  it('returns the id it removed', async () => {
+    stored = [storedPhoto('7')];
+
+    expect(await response(api.remove('7'))).toBe('7');
+  });
+
+  it('leaves the stored list alone when the id was never saved', async () => {
+    stored = [storedPhoto('7')];
+
+    await response(api.remove('9'));
+
+    expect(write).not.toHaveBeenCalled();
+  });
 });

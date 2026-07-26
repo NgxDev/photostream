@@ -13,4 +13,8 @@ export const routes: Routes = [
     path: 'photos/:id',
     loadComponent: () => import('./favorites/photo-detail/photo-detail').then((m) => m.PhotoDetail),
   },
+  {
+    path: '**',
+    redirectTo: '/',
+  },
 ];

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, type, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
-import { entityConfig, prependEntity, setAllEntities, withEntities } from '@ngrx/signals/entities';
+import { entityConfig, prependEntity, removeEntity, setAllEntities, withEntities } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { filter, mergeMap, pipe, switchMap, tap, timer } from 'rxjs';
 import { Photo } from '../picsum/photo';
@@ -74,7 +74,23 @@ export const FavoritesStore = signalStore(
       )
     );
 
-    return { load, save };
+    const remove = rxMethod<string>(
+      pipe(
+        filter((id) => !store.pendingIds().includes(id)),
+        tap((id) => patchState(store, { pendingIds: [...store.pendingIds(), id] })),
+        mergeMap((id) =>
+          store.api.remove(id).pipe(
+            tapResponse({
+              next: (removed) => patchState(store, removeEntity(removed)),
+              error: () => undefined,
+              finalize: () => patchState(store, { pendingIds: store.pendingIds().filter((each) => each !== id) }),
+            })
+          )
+        )
+      )
+    );
+
+    return { load, save, remove };
   }),
   withHooks((store) => ({
     onInit() {

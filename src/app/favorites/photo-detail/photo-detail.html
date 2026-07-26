@@ -1,0 +1,76 @@
+@if (shown(); as shown) {
+  <div class="photo-detail">
+    <div
+      class="photo-detail__stage"
+      [class.ps-shimmer]="!loaded()"
+      [style.aspectRatio]="shown.photo.width + ' / ' + shown.photo.height"
+    >
+      <img
+        class="photo-detail__image"
+        fetchpriority="high"
+        loading="eager"
+        [alt]="'Photo by ' + shown.photo.author"
+        [height]="shown.photo.height"
+        [sizes]="stageSizes(shown.photo)"
+        [srcset]="stageSrcset(shown.photo)"
+        [width]="shown.photo.width"
+        (error)="loaded.set(true)"
+        (load)="loaded.set(true)"
+      />
+
+      @if (!shown.alone) {
+        <span class="photo-detail__chevron photo-detail__chevron--previous">
+          <a matIconButton aria-label="Previous photo" [routerLink]="['/photos', shown.previousId]">
+            <span class="photo-detail__chevron-glyph"><mat-icon inline>chevron_left</mat-icon></span>
+          </a>
+        </span>
+
+        <span class="photo-detail__chevron photo-detail__chevron--next">
+          <a matIconButton aria-label="Next photo" [routerLink]="['/photos', shown.nextId]">
+            <span class="photo-detail__chevron-glyph"><mat-icon inline>chevron_right</mat-icon></span>
+          </a>
+        </span>
+      }
+
+      <span class="photo-detail__counter">{{ shown.counter }}</span>
+    </div>
+
+    <div class="photo-detail__summary">
+      <div class="photo-detail__about">
+        <h1 class="photo-detail__author">Photo by {{ shown.photo.author }}</h1>
+        <p class="photo-detail__dimensions">{{ shown.photo.width }} × {{ shown.photo.height }} px</p>
+      </div>
+
+      <button
+        class="photo-detail__remove"
+        disabledInteractive
+        matButton="filled"
+        type="button"
+        [attr.aria-label]="removing() ? 'Removing from favorites' : null"
+        [disabled]="removing()"
+        [showProgress]="removing()"
+        (click)="remove()"
+      >
+        <mat-spinner diameter="16" progressIndicator />
+        <span class="photo-detail__glyph"><mat-icon inline>heart_minus</mat-icon></span>
+        Remove from favorites
+      </button>
+    </div>
+  </div>
+} @else if (favorites.loaded()) {
+  <ps-empty-state
+    heading="That photo isn't in your favorites"
+    icon="search_off"
+    message="Only photos you have saved open on a page of their own. Everything you saved is on the Favorites screen."
+  >
+    <a class="photo-detail__back" matButton="filled" routerLink="/favorites">
+      <span class="photo-detail__glyph"><mat-icon inline>favorite</mat-icon></span>
+      Go to favorites
+    </a>
+  </ps-empty-state>
+} @else {
+  <div class="photo-detail__status" role="status">
+    <mat-spinner diameter="18" aria-hidden="true" />
+    <span>Loading photo</span>
+  </div>
+}
