@@ -14,8 +14,10 @@ import {
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { EmptyState } from '../../empty-state/empty-state';
+import { pageTitle } from '../../page-title-strategy';
 import { Photo } from '../../picsum/photo';
 import { PICSUM_BREAKPOINTS } from '../../picsum/picsum-image-loader';
 import { picsumImageUrl } from '../../picsum/picsum-urls';
@@ -78,6 +80,17 @@ export class PhotoDetail {
   protected readonly stageSizes = stageSizes;
   protected readonly stageSrcset = stageSrcset;
 
+  private readonly pageName = computed(() => {
+    const shown = this.shown();
+
+    if (shown) {
+      return `Photo by ${shown.photo.author}`;
+    }
+
+    return this.favorites.loaded() ? 'Photo not found' : 'Photo';
+  });
+
+  private readonly title = inject(Title);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
@@ -92,6 +105,8 @@ export class PhotoDetail {
       this.document.addEventListener('keydown', onKeydown);
       destroyRef.onDestroy(() => this.document.removeEventListener('keydown', onKeydown));
     });
+
+    effect(() => this.title.setTitle(pageTitle(this.pageName())));
 
     effect(() => {
       const leaving = this.leaveFor();
