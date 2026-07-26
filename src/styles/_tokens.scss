@@ -72,6 +72,7 @@ $sixth-column-at: 5 * $tile-max + 4 * $gap-wide + 2 * $padding-wide;
   --ps-page-padding: 14px;
   --ps-page-max: #{$page-max};
   --ps-header-height: 104px;
+  --ps-header-border: 1px;
 
   @media (min-width: 600px) {
     --ps-columns: 3;

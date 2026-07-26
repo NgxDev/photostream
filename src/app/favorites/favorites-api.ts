@@ -48,6 +48,19 @@ export class FavoritesApi {
     }).pipe(emulateLatency());
   }
 
+  remove(id: string): Observable<string> {
+    return defer(() => {
+      const stored = this.storedPhotos();
+      const remaining = stored.filter((entry) => entry.id !== id);
+
+      if (remaining.length !== stored.length) {
+        this.storage.write(STORAGE_KEY, remaining);
+      }
+
+      return of(id);
+    }).pipe(emulateLatency());
+  }
+
   private storedPhotos(): StoredPhoto[] {
     const stored = this.storage.read<unknown>(STORAGE_KEY);
 

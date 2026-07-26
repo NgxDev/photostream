@@ -10,11 +10,12 @@ function photo(id: string): Photo {
 
 function createStore(read: Observable<Photo[]> = of([])) {
   const add = vi.fn<(photo: Photo) => Observable<Photo>>((photo) => of(photo));
-  const api: Pick<FavoritesApi, 'read' | 'add'> = { read: () => read, add };
+  const remove = vi.fn<(id: string) => Observable<string>>((id) => of(id));
+  const api: Pick<FavoritesApi, 'read' | 'add' | 'remove'> = { read: () => read, add, remove };
 
   TestBed.configureTestingModule({ providers: [{ provide: FavoritesApi, useValue: api }] });
 
-  return { add, store: TestBed.inject(FavoritesStore) };
+  return { add, remove, store: TestBed.inject(FavoritesStore) };
 }
 
 describe('FavoritesStore', () => {
@@ -111,6 +112,52 @@ describe('FavoritesStore', () => {
     store.save(photo('7'));
 
     expect(store.entities()).toEqual([]);
+    expect(store.pendingIds()).toEqual([]);
+  });
+
+  it('drops a photo once its removal has gone through', () => {
+    const { store } = createStore(of([photo('9'), photo('7')]));
+
+    store.remove('7');
+
+    expect(store.entities().map(({ id }) => id)).toEqual(['9']);
+  });
+
+  it('marks a photo pending while its removal is on its way', () => {
+    const { remove, store } = createStore(of([photo('7')]));
+    const removing = new Subject<string>();
+
+    remove.mockReturnValue(removing);
+    store.remove('7');
+
+    expect(store.pendingIds()).toEqual(['7']);
+    expect(store.entities()).toHaveLength(1);
+
+    removing.next('7');
+    removing.complete();
+
+    expect(store.pendingIds()).toEqual([]);
+    expect(store.entities()).toEqual([]);
+  });
+
+  it('ignores a second click while a removal is on its way', () => {
+    const { remove, store } = createStore(of([photo('7')]));
+
+    remove.mockReturnValue(new Subject<string>());
+
+    store.remove('7');
+    store.remove('7');
+
+    expect(remove).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the photo when its removal fails', () => {
+    const { remove, store } = createStore(of([photo('7')]));
+
+    remove.mockReturnValue(throwError(() => new Error('storage is unwritable')));
+    store.remove('7');
+
+    expect(store.entities().map(({ id }) => id)).toEqual(['7']);
     expect(store.pendingIds()).toEqual([]);
   });
 
