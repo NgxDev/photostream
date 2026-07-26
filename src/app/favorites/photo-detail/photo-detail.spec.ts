@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Title } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { Photo } from '../../picsum/photo';
@@ -171,6 +172,15 @@ describe('PhotoDetail', () => {
     await fixture.whenStable();
 
     expect(navigate).toHaveBeenCalledWith(['/favorites']);
+  });
+
+  it.each([
+    { when: 'the photo is a favorite', id: '7', expected: 'Photo by Author 7 | Photostream' },
+    { when: 'the id is not a favorite', id: '42', expected: 'Photo not found | Photostream' },
+  ])('names the tab after $when', async ({ id, expected }) => {
+    await showPhoto(id, [photo('7')]);
+
+    expect(TestBed.inject(Title).getTitle()).toBe(expected);
   });
 
   it('does nothing when asked to remove a photo that is not a favorite', async () => {
